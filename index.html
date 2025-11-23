@@ -51,6 +51,12 @@
         const StudyPage = () => {
             const [activeTab, setActiveTab] = useState('reading');
             const [speechSpeaking, setSpeechSpeaking] = useState(false);
+            const StudyPage = () => {
+    const [activeTab, setActiveTab] = useState('reading');
+    const [speechSpeaking, setSpeechSpeaking] = useState(false);
+    
+    // PASTE THIS HERE:
+    const [showSecret, setShowSecret] = useState(false);
 
             const storyTitle = "The Tlingit Storytellers";
             const storyText = `
@@ -114,6 +120,18 @@
                         {/* READING SECTION */}
                         {activeTab === 'reading' && (
                             <div className="animate-fade-in">
+                                {/* READING SECTION */}
+{activeTab === 'reading' && (
+    <div className="animate-fade-in">
+
+        {/* --- PASTE THE NEW GAME CODE HERE --- */}
+        <div className="mb-8 bg-indigo-50 border-2 border-indigo-100 rounded-xl p-6 shadow-sm">
+             {/* ... rest of the game code ... */}
+        </div>
+        {/* --- END PASTE --- */}
+
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+            {/* ... this is where the existing image and text starts ... */}
                                 <div className="grid md:grid-cols-2 gap-8 items-start">
                                     {/* Image */}
                                     <div className="relative group rounded-xl overflow-hidden shadow-2xl h-96 bg-stone-200">
