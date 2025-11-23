@@ -22,6 +22,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        /* Simple arrow rotation utility */
+        .rotate-180 { transform: rotate(180deg); }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800">
@@ -46,17 +48,18 @@
         const RotateCcw = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
         const ArrowRight = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
         const Gamepad2 = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>;
+        const ChevronDown = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
 
         // --- APP COMPONENT ---
         const StudyPage = () => {
             const [activeTab, setActiveTab] = useState('reading');
             const [speechSpeaking, setSpeechSpeaking] = useState(false);
-            const StudyPage = () => {
-    const [activeTab, setActiveTab] = useState('reading');
-    const [speechSpeaking, setSpeechSpeaking] = useState(false);
-    
-    // PASTE THIS HERE:
-    const [showSecret, setShowSecret] = useState(false);
+            
+            // State for the Secret Phrase Button
+            const [showSecret, setShowSecret] = useState(false);
+            
+            // State for comprehension questions (accordion)
+            const [openQuestion, setOpenQuestion] = useState(null);
 
             const storyTitle = "The Tlingit Storytellers";
             const storyText = `
@@ -68,6 +71,30 @@
                 
                 Today we are used to reading written accounts of past events. It would be hard to get used to memorizing stories again.
             `;
+
+            // Follow-up questions data
+            const comprehensionQuestions = [
+                {
+                    id: 1,
+                    question: "Why did Clea's grandmother tell her stories?",
+                    answer: "She told stories to preserve the Tlingit culture and beliefs."
+                },
+                {
+                    id: 2,
+                    question: "What were two main purposes of storytelling mentioned in the text?",
+                    answer: "Storytelling was used to remember historical events and to teach important life lessons."
+                },
+                {
+                    id: 3,
+                    question: "Personal Reflection: Does your family have any stories that are told orally?",
+                    answer: "Answers will vary! Think about stories your parents or grandparents might tell during holidays or family gatherings."
+                },
+                {
+                    id: 4,
+                    question: "Why is oral storytelling particularly important for a community's identity?",
+                    answer: "It preserves culture and beliefs by passing them down directly from person to person, keeping the history alive."
+                }
+            ];
 
             const handleSpeak = () => {
                 if ('speechSynthesis' in window) {
@@ -94,7 +121,7 @@
                         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center">
                             <div className="flex items-center space-x-2 mb-4 sm:mb-0">
                                 <Brain className="w-8 h-8 text-teal-300" />
-                                <h1 className="text-xl font-bold tracking-wider">LINGUO<span className="text-teal-300">LAB</span> | Unit 8</h1>
+                                <h1 className="text-xl font-bold tracking-wider">Past Habits | Unit 3</h1>
                             </div>
                             <div className="flex space-x-2 bg-teal-800 rounded-lg p-1 overflow-x-auto max-w-full">
                                 {['reading', 'grammar', 'practice', 'rewrite'].map((tab) => (
@@ -120,21 +147,47 @@
                         {/* READING SECTION */}
                         {activeTab === 'reading' && (
                             <div className="animate-fade-in">
-                                {/* READING SECTION */}
-{activeTab === 'reading' && (
-    <div className="animate-fade-in">
+                                
+                                {/* CLASSROOM WARM-UP (Telephone Game) */}
+                                <div className="mb-8 bg-indigo-50 border-2 border-indigo-100 rounded-xl p-6 shadow-sm">
+                                    <div className="flex flex-col md:flex-row gap-6 items-start">
+                                        <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-full text-indigo-600">
+                                            <MessageSquare size={32} />
+                                        </div>
+                                        <div className="flex-grow">
+                                            <h3 className="text-xl font-bold text-indigo-900 mb-2">Classroom Warm-up: The "Telephone" Game</h3>
+                                            <p className="text-stone-700 mb-4">
+                                                Before we read, let's see how hard it is to keep a story perfect without writing it down!
+                                            </p>
+                                            <ol className="list-decimal list-inside space-y-1 text-sm text-stone-600 mb-4 font-medium">
+                                                <li>Stand in a line or circle.</li>
+                                                <li>The teacher will whisper a secret phrase to the first person.</li>
+                                                <li>Whisper it to the next person. No repeating!</li>
+                                                <li>The last person says it out loud. Did it change?</li>
+                                            </ol>
 
-        {/* --- PASTE THE NEW GAME CODE HERE --- */}
-        <div className="mb-8 bg-indigo-50 border-2 border-indigo-100 rounded-xl p-6 shadow-sm">
-             {/* ... rest of the game code ... */}
-        </div>
-        {/* --- END PASTE --- */}
+                                            <div className="flex items-center space-x-4">
+                                                <button 
+                                                    onClick={() => setShowSecret(!showSecret)}
+                                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center"
+                                                >
+                                                    {showSecret ? 'Hide Phrase' : 'Reveal Secret Phrase (Teacher Only)'}
+                                                </button>
+                                                
+                                                {showSecret && (
+                                                    <span className="text-indigo-800 font-serif italic text-lg animate-fade-in bg-white px-3 py-1 rounded border border-indigo-200">
+                                                        "The Raven brought light to the world because the darkness was too heavy."
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* END WARM-UP */}
 
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-            {/* ... this is where the existing image and text starts ... */}
                                 <div className="grid md:grid-cols-2 gap-8 items-start">
                                     {/* Image */}
-                                    <div className="relative group rounded-xl overflow-hidden shadow-2xl h-96 bg-stone-200">
+                                    <div className="relative group rounded-xl overflow-hidden shadow-2xl h-96 bg-stone-200 sticky top-24">
                                         {/* Instructions: Ensure "image_7be5dc.jpg" is in the same folder as this index.html file */}
                                         <img 
                                             src="image_7be5dc.jpg"
@@ -192,6 +245,35 @@
                                             <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                             <p>Tip: Hover over the highlighted phrases to see a quick hint about the grammar usage!</p>
                                         </div>
+
+                                        {/* --- NEW: COMPREHENSION CHECK (Follow-up Questions) --- */}
+                                        <div className="mt-8 border-t-2 border-stone-100 pt-6">
+                                            <h3 className="font-bold text-teal-900 text-lg mb-4 flex items-center">
+                                                <Check className="w-5 h-5 mr-2 text-teal-600" />
+                                                Check Your Understanding
+                                            </h3>
+                                            <div className="space-y-3">
+                                                {comprehensionQuestions.map((q, idx) => (
+                                                    <div key={q.id} className="border border-stone-200 rounded-lg overflow-hidden">
+                                                        <button 
+                                                            onClick={() => setOpenQuestion(openQuestion === q.id ? null : q.id)}
+                                                            className="w-full text-left p-4 bg-stone-50 hover:bg-stone-100 font-medium text-stone-700 flex justify-between items-center transition-colors focus:outline-none"
+                                                        >
+                                                            <span className="font-semibold text-sm">{q.question}</span>
+                                                            <ChevronDown className={`w-5 h-5 text-stone-400 transform transition-transform duration-300 ${openQuestion === q.id ? 'rotate-180' : ''}`} />
+                                                        </button>
+                                                        {openQuestion === q.id && (
+                                                            <div className="p-4 bg-white text-stone-600 text-sm animate-fade-in border-t border-stone-200 leading-relaxed">
+                                                                <span className="font-bold text-teal-700 block mb-1">Answer:</span>
+                                                                {q.answer}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {/* --- END COMPREHENSION CHECK --- */}
+
                                     </div>
                                 </div>
                             </div>
@@ -228,6 +310,9 @@
                                                 <ul className="space-y-2 mt-3 text-sm text-stone-700">
                                                     <li className="italic">"My grandma <strong>used to tell</strong> me stories."</li>
                                                     <li className="italic">"I <strong>used to have</strong> short hair." (State)</li>
+                                                    <li className="italic">"We <strong>used to live</strong> in a much smaller house."</li>
+                                                    <li className="italic">"She <strong>didn't use to like</strong> spicy food, but now she loves it."</li>
+                                                    <li className="italic">"There <strong>used to be</strong> a cinema here before the mall."</li>
                                                 </ul>
                                             </div>
                                             <div className="relative pl-6 border-l-4 border-amber-200">
@@ -235,6 +320,9 @@
                                                 <p className="text-sm text-stone-600 mb-2">Strictly for repeated <strong>actions</strong> only.</p>
                                                 <ul className="space-y-2 mt-3 text-sm text-stone-700">
                                                     <li className="italic">"People <strong>would tell</strong> stories orally."</li>
+                                                    <li className="italic">"Every summer, we <strong>would go</strong> camping by the lake."</li>
+                                                    <li className="italic">"My dad <strong>would always bring</strong> us treats on Fridays."</li>
+                                                    <li className="italic">"On rainy days, we <strong>would sit</strong> inside and play games."</li>
                                                 </ul>
                                             </div>
                                             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
@@ -258,6 +346,9 @@
                                                 <p className="text-sm text-stone-600 mb-2">Something is normal/familiar for you <strong>now</strong>.</p>
                                                 <ul className="space-y-2 mt-3 text-sm text-stone-700">
                                                     <li className="italic">"We <strong>are used to reading</strong>."</li>
+                                                    <li className="italic">"I <strong>am used to the cold weather</strong> now."</li>
+                                                    <li className="italic">"She <strong>isn't used to driving</strong> on the left side."</li>
+                                                    <li className="italic">"Are you <strong>used to the noise</strong> from the construction yet?"</li>
                                                 </ul>
                                                 <div className="mt-2 flex items-center space-x-2 text-teal-700 text-xs font-medium"><Check size={14} /> State: Current Comfort</div>
                                             </div>
@@ -266,6 +357,9 @@
                                                 <p className="text-sm text-stone-600 mb-2">The <strong>process</strong> of something becoming normal.</p>
                                                 <ul className="space-y-2 mt-3 text-sm text-stone-700">
                                                     <li className="italic">"It's hard to <strong>get used to memorizing</strong>."</li>
+                                                    <li className="italic">"He is slowly <strong>getting used to his new job</strong>."</li>
+                                                    <li className="italic">"I finally <strong>got used to waking up</strong> early."</li>
+                                                    <li className="italic">"Don't worry, you will <strong>get used to the software</strong> soon."</li>
                                                 </ul>
                                                 <div className="mt-2 flex items-center space-x-2 text-teal-700 text-xs font-medium"><ArrowRight size={14} /> Action: The Change</div>
                                             </div>
