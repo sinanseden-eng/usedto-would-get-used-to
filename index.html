@@ -193,6 +193,73 @@
             </section>;
         }
 
+        const grammarDialogues = {
+            usedTo: [
+                ['The mystery drummer', ['Ece', 'Who’s playing the drums in this old photo?'],
+                    ['Mina', <>Me! I <mark>used to play</mark> in a band before I joined the story club.</>],
+                    ['Ece', 'Keep the drumsticks. Your ghost story needs a drumroll.']],
+                ['The missing cinema', ['Leo', 'Why does everyone call this bookshop “the cinema”?'],
+                    ['Ada', <>It <mark>used to be</mark> a cinema. That café was the ticket office.</>],
+                    ['Leo', 'So I’m buying a sandwich where you bought your tickets!']],
+                ['A familiar face', ['Ali', <>Wait, <mark>did you use to live</mark> above the bakery?</>],
+                    ['Elif', <>Yes! We <mark>used to wake up</mark> to the smell of fresh bread.</>],
+                    ['Ali', 'I remember you now. We took the same bus to school.']]
+            ],
+            would: [
+                ['The missing ending', ['Ece', 'When you were little, did your grandad read to you?'],
+                    ['Mina', <>Every night he <mark>would stop</mark> just before the ending.</>],
+                    ['Ece', 'Let me guess. You had to invent the last line!']],
+                ['The last shot', ['Ada', 'How did you finish basketball practice last year?'],
+                    ['Leo', <>Coach <mark>would take</mark> one last shot from halfway across the court.</>],
+                    ['Ada', 'Did he ever get it in?']],
+                ['The ferry game', ['Elif', 'How did you pass the time on the ferry when you were kids?'],
+                    ['Ali', <>On every crossing, my sister and I <mark>would count</mark> the seagulls.</>],
+                    ['Elif', 'How did you know you weren’t counting the same one twice?']]
+            ],
+            beUsedTo: [
+                ['Behind the curtain', ['Ece', 'Another full house! Are you nervous?'],
+                    ['Mina', <>I <mark>am used to speaking</mark> in front of a crowd now.</>],
+                    ['Ece', 'Good. Can you introduce me? My knees are shaking!']],
+                ['Above the bakery', ['Ali', 'Does the delivery van wake you up every morning?'],
+                    ['Elif', <>I <mark>am used to the noise</mark>. I sleep right through it.</>],
+                    ['Ali', 'Lucky you. I heard every single crate this morning.']],
+                ['A very early start', ['Ada', 'You put salt in your tea. Rough morning?'],
+                    ['Leo', <>I <mark>am not used to getting up</mark> at six.</>],
+                    ['Ada', 'Here. Try this cup. I checked the sugar.']]
+            ],
+            getUsedTo: [
+                ['Microphone check', ['Ece', 'You left your notes on the table. Want them?'],
+                    ['Mina', <>Keep them nearby. I <mark>am getting used to telling</mark> the story from memory.</>],
+                    ['Ece', 'I’ll hold them up if you get stuck.']],
+                ['The early ferry', ['Elif', 'Was catching the seven o’clock ferry always this easy for you?'],
+                    ['Ali', <>Hardly! It took me a month to <mark>get used to the early start</mark>.</>],
+                    ['Elif', 'Then there’s hope for me. I’ve only missed it twice.']],
+                ['Back on the bike', ['Leo', 'You cycled all the way up that hill today!'],
+                    ['Ada', <>Yes! After a few weeks, I finally <mark>got used to riding</mark> uphill.</>],
+                    ['Leo', 'Next time, wait for me at the top.']]
+            ]
+        };
+
+        function PairDialogues({ topic }) {
+            return <section className="mt-4" aria-label="Pair dialogues">
+                <h5 className="text-base font-bold text-slate-800">Pair dialogues</h5>
+                <div className="mt-2 space-y-2">
+                    {grammarDialogues[topic].map(([title, ...lines], index) =>
+                        <details key={title} open={index === 0}
+                            className="rounded-lg border border-slate-300 bg-slate-50">
+                            <summary className="cursor-pointer rounded-lg px-3 py-2 font-semibold text-slate-800 focus-visible:outline-blue-600">{title}</summary>
+                            <dl className="space-y-2 px-3 pb-3">
+                                {lines.map(([speaker, words], i) => <div key={i} className="flex items-baseline gap-2">
+                                    <dt className={'min-w-10 font-bold ' + (i === 1 ? 'text-blue-800' : 'text-rose-800')}>{speaker}</dt>
+                                    <dd className="leading-snug text-slate-800 [&_mark]:bg-yellow-200 [&_mark]:font-bold">{words}</dd>
+                                </div>)}
+                            </dl>
+                        </details>
+                    )}
+                </div>
+            </section>;
+        }
+
         // --- APP COMPONENT ---
         const StudyPage = () => {
             const [activeTab, setActiveTab] = useState(() => window.location.hash === '#grammar' ? 'grammar' : 'reading');
@@ -459,6 +526,7 @@
                                                     <li className="italic">"She <strong>didn't use to like</strong> spicy food, but now she loves it."</li>
                                                     <li className="italic">"There <strong>used to be</strong> a cinema here before the mall."</li>
                                                 </ul>
+                                                <PairDialogues topic="usedTo" />
                                             </div>
                                             <div className="relative pl-6 border-l-4 border-amber-200">
                                                 <h4 className="font-bold text-amber-700 flex items-center text-lg">would + infinitive</h4>
@@ -469,6 +537,7 @@
                                                     <li className="italic">"My dad <strong>would always bring</strong> us treats on Fridays."</li>
                                                     <li className="italic">"On rainy days, we <strong>would sit</strong> inside and play games."</li>
                                                 </ul>
+                                                <PairDialogues topic="would" />
                                             </div>
                                             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
                                                 <div className="flex items-center text-red-700 font-bold mb-2 text-sm">
@@ -496,6 +565,7 @@
                                                     <li className="italic">"Are you <strong>used to the noise</strong> from the construction yet?"</li>
                                                 </ul>
                                                 <div className="mt-2 flex items-center space-x-2 text-teal-700 text-xs font-medium"><Check size={14} /> State: Current Comfort</div>
+                                                <PairDialogues topic="beUsedTo" />
                                             </div>
                                             <div className="relative pl-6 border-l-4 border-teal-200">
                                                 <h4 className="font-bold text-teal-700 flex items-center text-lg">get used to + noun/-ing</h4>
@@ -507,6 +577,7 @@
                                                     <li className="italic">"Don't worry, you will <strong>get used to the software</strong> soon."</li>
                                                 </ul>
                                                 <div className="mt-2 flex items-center space-x-2 text-teal-700 text-xs font-medium"><ArrowRight size={14} /> Action: The Change</div>
+                                                <PairDialogues topic="getUsedTo" />
                                             </div>
                                         </div>
                                     </div>
