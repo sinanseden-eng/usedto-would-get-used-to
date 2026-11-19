@@ -15,6 +15,8 @@
     <!-- Babel to translate JSX in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <link rel="stylesheet" href="assets/story-club/story-club.css">
+
     <!-- Styles -->
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -50,9 +52,150 @@
         const Gamepad2 = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>;
         const ChevronDown = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
 
+        const storyArt = 'assets/story-club/';
+        const clubScenes = [
+            {
+                name: 'Used to', title: 'Behind the notebook', colour: '#ffc857',
+                form: 'used to + V1', meaning: 'A past habit or state that has changed.',
+                question: 'Is Mina still afraid of the stage?',
+                answer: 'No. She was afraid last year, but now she enjoys going on stage.',
+                panels: [
+                    { when: 'Last year', set: 'hall', pose: 'shy', line: ['I ', 'used to be', ' afraid of the stage.'] },
+                    { when: 'My first rehearsal', set: 'practice', pose: 'practice', line: ['Then I joined the school story club. My first audience? Three empty chairs!'] },
+                    { when: 'Today', set: 'show', pose: 'host', line: ['Now I love being on stage. Who wants a story?'] }
+                ]
+            },
+            {
+                name: 'Would', title: 'The Friday encore', colour: '#ff927e',
+                form: 'would + V1', meaning: 'An action that happened again and again in the past.',
+                question: 'Which words tell us this happened more than once?',
+                answer: '“Every Friday” sets up a repeated past action. “Used to put on” also works here.',
+                panels: [
+                    { when: 'Back at home', set: 'home', pose: 'shy', line: ['Before I joined the club, I had a much smaller audience. Just my brother!'] },
+                    { when: 'Every Friday', set: 'home', pose: 'puppet', line: ['Every Friday, I ', 'would put on', ' a puppet show for him.'] },
+                    { when: 'After every show', set: 'home', pose: 'puppet', line: ['My brother ', 'would call', ' for an encore. That rabbit never got a Friday off!'] }
+                ]
+            },
+            {
+                name: 'Get used to', title: 'Is that my voice?', colour: '#86ccff',
+                form: 'get used to + noun / -ing', meaning: 'Something feels more familiar with time.',
+                question: 'Does the microphone feel completely normal to Mina yet?',
+                answer: 'She is still adjusting. Each rehearsal feels a little easier.',
+                panels: [
+                    { when: 'First rehearsal', set: 'practice', pose: 'shy', line: ['Whoa! Is that my voice coming out of the speakers?'] },
+                    { when: 'A week later', set: 'practice', pose: 'practice', line: ['I’m ', 'getting used to speaking', ' into the microphone.'] },
+                    { when: 'Next rehearsal', set: 'practice', pose: 'host', line: ['That felt easier! Shall we try the rabbit’s voice this time?'] }
+                ]
+            },
+            {
+                name: 'Be used to', title: 'Another full house', colour: '#ffc65c',
+                form: 'be used to + noun / -ing', meaning: 'Something already feels normal or familiar.',
+                question: 'What changes if Mina says “I used to speak into a microphone”?',
+                answer: 'That describes a past habit. “I am used to speaking” tells us how familiar it feels now.',
+                panels: [
+                    { when: 'Show night', set: 'show', pose: 'host', line: ['A full room and a microphone? A normal Friday night for me.'] },
+                    { when: 'At the microphone', set: 'show', pose: 'host', line: ['I ', 'am used to speaking', ' into the microphone now.'] },
+                    { when: 'The encore', set: 'show', pose: 'puppet', line: ['The rabbit ', 'is used to the applause', ', too. He insists on taking his own bow.'] }
+                ]
+            }
+        ];
+
+        function StoryClub() {
+            const [sceneIndex, setSceneIndex] = useState(0);
+            const [panelIndex, setPanelIndex] = useState(0);
+            const [playing, setPlaying] = useState(false);
+            const [elapsed, setElapsed] = useState(0);
+            const [revealed, setRevealed] = useState(false);
+            const scene = clubScenes[sceneIndex];
+            const panel = scene.panels[panelIndex];
+            const last = panelIndex === scene.panels.length - 1;
+            const duration = 5000;
+
+            useEffect(() => {
+                if (!playing) return;
+                const start = performance.now() - elapsed;
+                const timer = window.setInterval(() => {
+                    const time = performance.now() - start;
+                    if (time < duration) {
+                        setElapsed(time);
+                    } else if (last) {
+                        setElapsed(duration);
+                        setPlaying(false);
+                    } else {
+                        setElapsed(0);
+                        setPanelIndex(panelIndex + 1);
+                    }
+                }, 80);
+                return () => window.clearInterval(timer);
+            }, [playing, panelIndex, sceneIndex]);
+
+            function selectPanel(index) {
+                setPlaying(false);
+                setElapsed(0);
+                setPanelIndex(index);
+            }
+
+            function togglePlayback() {
+                if (!playing && last && elapsed >= duration) {
+                    setElapsed(0);
+                    setPanelIndex(0);
+                }
+                setPlaying(!playing);
+            }
+
+            const finished = last && elapsed >= duration;
+            return <section className="club" style={{'--club-accent': scene.colour}} aria-labelledby="club-title">
+                <header className="club-heading">
+                    <div><p className="club-overline">Grammar in action</p>
+                        <h2 id="club-title">The Story Club</h2>
+                    </div>
+                    <p>Follow Mina from backstage nerves to her own show. Choose a scene and press play.</p>
+                </header>
+                <div className="club-choices" role="group" aria-label="Choose a grammar scene">
+                    {clubScenes.map((item, i) => <button key={item.name} type="button"
+                        style={{'--choice-colour': item.colour}} aria-pressed={i === sceneIndex}
+                        onClick={() => { setSceneIndex(i); selectPanel(0); setRevealed(false); }}>
+                        {item.name}</button>)}
+                </div>
+                <div className="club-frame">
+                    <div className={'club-stage' + (playing ? ' is-playing' : '')}>
+                        <div className="club-art" key={sceneIndex + '-' + panelIndex}>
+                            <img className="club-set" src={storyArt + panel.set + '.webp'} alt="" />
+                            <div className={'club-actor pose-' + panel.pose} role="img"
+                                aria-label={{shy:'Mina peeks over her notebook.', puppet:'Mina performs with her rabbit hand puppet.', practice:'Mina rehearses with her notebook.', host:'Mina gestures confidently to her audience.'}[panel.pose]}
+                                style={{backgroundImage:'url(' + storyArt + panel.pose + '-motion.webp)'}} />
+                            <span className="club-time">{panel.when}</span>
+                        </div>
+                        <div className="club-dialogue" aria-live={playing ? 'off' : 'polite'} aria-atomic="true">
+                            <h3>{scene.title}</h3>
+                            <p className="club-speaker">Mina</p>
+                            <blockquote>{panel.line[0]}{panel.line.length > 1 && <><mark>{panel.line[1]}</mark>{panel.line[2]}</>}</blockquote>
+                        </div>
+                    </div>
+                    <div className="club-controls" role="group" aria-label="Scene playback">
+                        <button type="button" className="club-play" onClick={togglePlayback}>
+                            <span aria-hidden="true">{playing ? 'Ⅱ' : finished ? '↺' : '▶'}</span>
+                            {playing ? 'Pause' : finished ? 'Replay' : elapsed > 0 ? 'Resume' : 'Play scene'}
+                        </button>
+                        <div className="club-meter" aria-hidden="true">{scene.panels.map((_, i) =>
+                            <span key={i}><i style={{width:(i < panelIndex ? 100 : i === panelIndex ? elapsed / duration * 100 : 0) + '%'}} /></span>)}</div>
+                        <span className="club-count">Panel {panelIndex + 1} of {scene.panels.length}</span>
+                        <button type="button" className="club-step" aria-label="Previous panel" disabled={!panelIndex} onClick={() => selectPanel(panelIndex - 1)}>‹</button>
+                        <button type="button" className="club-step" aria-label="Next panel" disabled={last} onClick={() => selectPanel(panelIndex + 1)}>›</button>
+                    </div>
+                </div>
+                <div className="club-notice">
+                    <div><strong>{scene.form}</strong><p>{scene.meaning}</p></div>
+                    <div><button className="club-question" type="button" aria-expanded={revealed} aria-controls="club-answer" onClick={() => setRevealed(!revealed)}>
+                        {scene.question}<span aria-hidden="true">{revealed ? '−' : '+'}</span></button>
+                        <p id="club-answer" hidden={!revealed}>{scene.answer}</p></div>
+                </div>
+            </section>;
+        }
+
         // --- APP COMPONENT ---
         const StudyPage = () => {
-            const [activeTab, setActiveTab] = useState('reading');
+            const [activeTab, setActiveTab] = useState(() => window.location.hash === '#grammar' ? 'grammar' : 'reading');
             const [speechSpeaking, setSpeechSpeaking] = useState(false);
             
             // State for the Secret Phrase Button
@@ -127,7 +270,12 @@
                                 {['reading', 'grammar', 'practice', 'rewrite'].map((tab) => (
                                     <button
                                         key={tab}
-                                        onClick={() => setActiveTab(tab)}
+                                        onClick={() => {
+                                            setActiveTab(tab);
+                                            if (tab === 'grammar' || window.location.hash === '#grammar') {
+                                                history.replaceState(null, '', location.pathname + location.search + (tab === 'grammar' ? '#grammar' : ''));
+                                            }
+                                        }}
                                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 capitalize whitespace-nowrap ${
                                             activeTab === tab 
                                                 ? 'bg-white text-teal-900 shadow-sm' 
@@ -282,13 +430,10 @@
                         {/* GRAMMAR SECTION */}
                         {activeTab === 'grammar' && (
                             <div className="animate-fade-in space-y-8">
-                                <div className="text-center max-w-2xl mx-auto">
-                                    <h2 className="text-3xl font-bold text-stone-900 mb-3">Grammar Technology</h2>
-                                    <p className="text-stone-600">Visualizing "Past Habits" vs. "Changing States"</p>
-                                </div>
+                                <StoryClub />
 
                                 <div className="w-full max-w-3xl mx-auto aspect-video bg-stone-900 rounded-xl overflow-hidden shadow-xl border-4 border-white">
-                                    <iframe 
+                                    <iframe loading="lazy"
                                         src="https://drive.google.com/file/d/1ZxVpta3vAD_PtbA6gFBi4Pqm9BcY5aFc/preview" 
                                         className="w-full h-full" 
                                         allow="autoplay; fullscreen"
@@ -301,7 +446,7 @@
                                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-stone-200 flex flex-col h-full">
                                         <div className="bg-amber-500 p-4 text-white flex items-center space-x-3">
                                             <History size={24} />
-                                            <h3 className="font-bold text-lg">The Past (No Longer True)</h3>
+                                            <h3 className="font-bold text-lg">Past habits and states</h3>
                                         </div>
                                         <div className="p-6 space-y-6 flex-grow">
                                             <div className="relative pl-6 border-l-4 border-amber-200">
@@ -317,7 +462,7 @@
                                             </div>
                                             <div className="relative pl-6 border-l-4 border-amber-200">
                                                 <h4 className="font-bold text-amber-700 flex items-center text-lg">would + infinitive</h4>
-                                                <p className="text-sm text-stone-600 mb-2">Strictly for repeated <strong>actions</strong> only.</p>
+                                                <p className="text-sm text-stone-600 mb-2">Set the scene in the past, then use <strong>would</strong> for repeated actions.</p>
                                                 <ul className="space-y-2 mt-3 text-sm text-stone-700">
                                                     <li className="italic">"People <strong>would tell</strong> stories orally."</li>
                                                     <li className="italic">"Every summer, we <strong>would go</strong> camping by the lake."</li>
@@ -329,7 +474,7 @@
                                                 <div className="flex items-center text-red-700 font-bold mb-2 text-sm">
                                                     <AlertTriangle className="w-4 h-4 mr-2" /> CRITICAL RULE: State Verbs
                                                 </div>
-                                                <p className="text-xs text-red-800 mb-2">Verbs that describe a state (be, have, love, know) <strong>CANNOT</strong> use 'would'.</p>
+                                                <p className="text-xs text-red-800 mb-2">For a past state such as owning a house or knowing someone, use <strong>used to</strong>. Habitual <strong>would</strong> describes repeated actions.</p>
                                             </div>
                                         </div>
                                     </div>
